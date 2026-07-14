@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+  }
+
+  body {
+    background-color: #F5F7F9;
+    color: #4F525A;
+  }
+}
+
+:root {
+  --primary: #14B7C1;
+  --primary-hover: #0F98A1;
+  --bg: #FFFFFF;
+  --bg-cards: #F5F7F9;
+  --text: #4F525A;
+  --border: #E3E6EA;
+  --sidebar: #2D3748;
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --error: #EF4444;
+}
