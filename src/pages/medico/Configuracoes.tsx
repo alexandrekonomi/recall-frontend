@@ -2,14 +2,12 @@ import { useState, useEffect } from 'react'
 import { Plus, MoreVertical } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
 import { buscarConfiguracao, atualizarConfiguracao } from '../../api/configuracoes'
-import { useAuth } from '../../context/AuthContext'
 import { listarUsuarios, desativarUsuario, reativarUsuario } from '../../api/usuarios'
 import { ModalConvidarUsuario } from '../../components/ui/ModalConvidarUsuario'
 import type { Usuario } from '../../api/usuarios'
 
 
 export function Configuracoes() {
-  const { usuario } = useAuth()
   const [nomeClinica, setNomeClinica] = useState('')
   const [telefoneContato, setTelefoneContato] = useState('')
   const [diasRecontato, setDiasRecontato] = useState('3')
