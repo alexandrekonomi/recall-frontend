@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { LayoutDashboard, Users, ClipboardList, Settings, ChevronLeft } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import logo from '../../assets/logo-side.svg';
+import { UserPlus } from 'lucide-react'
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
@@ -15,6 +16,7 @@ export function Sidebar() {
   const menuSecretaria = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
     { label: 'Pacientes', icon: Users, path: '/pacientes' },
+    { label: 'Cadastro rápido', icon: UserPlus, path: '/cadastro-lote' },
   ]
 
   const menuMedico = [

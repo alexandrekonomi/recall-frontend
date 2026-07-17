@@ -9,6 +9,7 @@ import { Procedimentos } from './pages/medico/Procedimentos'
 import { PainelGestaoPage } from './pages/medico/PainelGestao'
 import { Configuracoes } from './pages/medico/Configuracoes'
 import { AtivarConta } from './pages/auth/AtivarConta'
+import { CadastroLote } from './pages/secretaria/CadastroLote'
 
 
 function RotasProtegidas() {
@@ -31,6 +32,7 @@ function AppRoutes() {
         <Route path="painel" element={<div className="text-xl font-bold text-[#4F525A]">Painel Médico — em construção</div>} />
         <Route path="procedimentos" element={<Procedimentos />} />
         <Route path="configuracoes" element={<Configuracoes />} />
+        <Route path="cadastro-lote" element={<CadastroLote />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
