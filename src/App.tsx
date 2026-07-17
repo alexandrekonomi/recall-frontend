@@ -10,7 +10,8 @@ import { PainelGestaoPage } from './pages/medico/PainelGestao'
 import { Configuracoes } from './pages/medico/Configuracoes'
 import { AtivarConta } from './pages/auth/AtivarConta'
 import { CadastroLote } from './pages/secretaria/CadastroLote'
-
+import { AgendamentosConfirmar } from './pages/secretaria/AgendamentosConfirmar'
+import { ToastProvider } from './context/ToastContext'
 
 function RotasProtegidas() {
   const { isAutenticado } = useAuth()
@@ -33,6 +34,7 @@ function AppRoutes() {
         <Route path="procedimentos" element={<Procedimentos />} />
         <Route path="configuracoes" element={<Configuracoes />} />
         <Route path="cadastro-lote" element={<CadastroLote />} />
+        <Route path="agendamentos-confirmar" element={<AgendamentosConfirmar />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
@@ -43,10 +45,11 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <ToastProvider>
+          <AppRoutes />
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   )
 }
-
 export default App

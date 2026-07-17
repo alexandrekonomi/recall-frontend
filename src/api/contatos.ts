@@ -10,6 +10,8 @@ export const registrarContato = async (payload: {
   procedimentoPacienteId: number
   status: ResultadoContato
   observacao?: string
+  procedimentoAgendadoId?: number
+  dataAgendada?: string
 }): Promise<Contato> => {
   const { data } = await api.post('/contatos/registrar', payload)
   return data
