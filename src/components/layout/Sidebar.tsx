@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { LayoutDashboard, Users, ClipboardList, Settings, ChevronLeft, UserPlus, CalendarClock } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { listarAguardandoDados } from '../../api/agendamentos'
+import { CheckCircle2 } from 'lucide-react'
+import { listarAguardandoRealizacao } from '../../api/agendamentos'
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
@@ -10,6 +12,7 @@ export function Sidebar() {
   const { usuario, sair } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const [totalRealizacao, setTotalRealizacao] = useState(0)
 
   const isMedico = usuario?.perfil === 'MEDICO'
 
@@ -21,11 +24,19 @@ export function Sidebar() {
     }
   }, [isMedico])
 
+  useEffect(() => {
+    if (!isMedico) {
+      listarAguardandoDados().then(data => setTotalPendentes(data.length)).catch(console.error)
+      listarAguardandoRealizacao().then(data => setTotalRealizacao(data.length)).catch(console.error)
+    }
+  }, [isMedico])
+
   const menuSecretaria = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', badge: 0 },
     { label: 'Pacientes', icon: Users, path: '/pacientes', badge: 0 },
     { label: 'Cadastro rápido', icon: UserPlus, path: '/cadastro-lote', badge: 0 },
     { label: 'Agendamentos', icon: CalendarClock, path: '/agendamentos-confirmar', badge: totalPendentes },
+    { label: 'Confirmar realização', icon: CheckCircle2, path: '/confirmar-realizacao', badge: totalRealizacao },
   ]
 
   const menuMedico = [

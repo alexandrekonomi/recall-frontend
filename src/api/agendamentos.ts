@@ -24,3 +24,16 @@ export const completarAgendamento = async (id: number, payload: {
   const { data } = await api.patch(`/agendamentos/${id}/completar`, payload)
   return data
 }
+
+export const listarAguardandoRealizacao = async (): Promise<AgendamentoItem[]> => {
+  const { data } = await api.get('/agendamentos/aguardando-realizacao')
+  return data
+}
+
+export const confirmarRealizacao = async (id: number, payload: {
+  procedimentoId?: number
+  dataRealizacao?: string
+}): Promise<AgendamentoItem> => {
+  const { data } = await api.patch(`/agendamentos/${id}/confirmar-realizacao`, payload)
+  return data
+}

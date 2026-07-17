@@ -12,6 +12,7 @@ import { AtivarConta } from './pages/auth/AtivarConta'
 import { CadastroLote } from './pages/secretaria/CadastroLote'
 import { AgendamentosConfirmar } from './pages/secretaria/AgendamentosConfirmar'
 import { ToastProvider } from './context/ToastContext'
+import { ConfirmarRealizacao } from './pages/secretaria/ConfirmarRealizacao'
 
 function RotasProtegidas() {
   const { isAutenticado } = useAuth()
@@ -35,6 +36,7 @@ function AppRoutes() {
         <Route path="configuracoes" element={<Configuracoes />} />
         <Route path="cadastro-lote" element={<CadastroLote />} />
         <Route path="agendamentos-confirmar" element={<AgendamentosConfirmar />} />
+        <Route path="confirmar-realizacao" element={<ConfirmarRealizacao />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
