@@ -5,6 +5,8 @@ import { buscarConfiguracao, atualizarConfiguracao } from '../../api/configuraco
 import { listarUsuarios, desativarUsuario, reativarUsuario } from '../../api/usuarios'
 import { ModalConvidarUsuario } from '../../components/ui/ModalConvidarUsuario'
 import type { Usuario } from '../../api/usuarios'
+import { Settings } from 'lucide-react'
+import { PageHeader } from '../../components/ui/PageHeader'
 
 
 export function Configuracoes() {
@@ -77,9 +79,11 @@ export function Configuracoes() {
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif' }}>
-      <h1 className="text-[28px] font-bold mb-6" style={{ color: '#4F525A' }}>
-        Configurações
-      </h1>
+      <PageHeader
+        icon={<Settings size={20} />}
+        title="Configurações"
+        subtitle="Dados da clínica, reativação e usuários"
+      />
 
       <div className="flex flex-col gap-4">
         {/* Dados da clínica */}

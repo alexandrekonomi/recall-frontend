@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts'
 import { buscarPainelGestao } from '../../api/painel'
 import type { PainelGestao } from '../../api/painel'
+import { PageHeader } from '../../components/ui/PageHeader'
+import { BarChart3 } from 'lucide-react'
 
 const CORES_STATUS: Record<string, string> = {
   AGENDOU: '#22C55E',
@@ -54,9 +56,11 @@ export function PainelGestaoPage() {
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif' }}>
-      <h1 className="text-[28px] font-bold mb-6" style={{ color: '#4F525A' }}>
-        Painel de gestão
-      </h1>
+      <PageHeader
+        icon={<BarChart3 size={20} />}
+        title="Painel de gestão"
+        subtitle="Métricas e desempenho da clínica"
+      />
 
       {/* Métricas principais */}
       <div className="grid grid-cols-4 gap-4 mb-6">
