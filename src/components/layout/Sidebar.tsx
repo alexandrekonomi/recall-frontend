@@ -1,28 +1,19 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Users, ClipboardList, Settings, ChevronLeft, UserPlus, CalendarClock } from 'lucide-react'
+import { LayoutDashboard, Users, ClipboardList, Settings, ChevronLeft, UserPlus, CalendarClock, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
-import { listarAguardandoDados } from '../../api/agendamentos'
-import { CheckCircle2 } from 'lucide-react'
-import { listarAguardandoRealizacao } from '../../api/agendamentos'
+import { listarAguardandoDados, listarAguardandoRealizacao } from '../../api/agendamentos'
+import logo from '../../assets/logo-side.svg'
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
   const [totalPendentes, setTotalPendentes] = useState(0)
+  const [totalRealizacao, setTotalRealizacao] = useState(0)
   const { usuario, sair } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const [totalRealizacao, setTotalRealizacao] = useState(0)
 
   const isMedico = usuario?.perfil === 'MEDICO'
-
-  useEffect(() => {
-    if (!isMedico) {
-      listarAguardandoDados()
-        .then(data => setTotalPendentes(data.length))
-        .catch(console.error)
-    }
-  }, [isMedico])
 
   useEffect(() => {
     if (!isMedico) {
@@ -60,16 +51,13 @@ export function Sidebar() {
       }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5">
-        <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-          style={{ backgroundColor: '#14B7C1' }}
-        >
-          <span className="text-white font-bold text-sm">R</span>
-        </div>
-        {!collapsed && (
-          <span className="text-white font-semibold text-[15px]">Recall</span>
-        )}
+      <div className="flex items-center justify-center px-4 py-5">
+        <img
+          src={logo}
+          alt="Recall"
+          className="flex-shrink-0"
+          style={{ height: 32, width: 32 }}
+        />
       </div>
 
       {/* Nav */}
