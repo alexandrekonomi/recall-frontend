@@ -1,18 +1,18 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { ToastProvider } from './context/ToastContext'
 import { AppLayout } from './components/layout/AppLayout'
 import { Login } from './pages/auth/Login'
+import { AtivarConta } from './pages/auth/AtivarConta'
 import { Dashboard } from './pages/secretaria/Dashboard'
 import { Pacientes } from './pages/secretaria/Pacientes'
 import { PerfilPaciente } from './pages/secretaria/PerfilPaciente'
-import { Procedimentos } from './pages/medico/Procedimentos'
-import { PainelGestaoPage } from './pages/medico/PainelGestao'
-import { Configuracoes } from './pages/medico/Configuracoes'
-import { AtivarConta } from './pages/auth/AtivarConta'
 import { CadastroLote } from './pages/secretaria/CadastroLote'
 import { AgendamentosConfirmar } from './pages/secretaria/AgendamentosConfirmar'
-import { ToastProvider } from './context/ToastContext'
 import { ConfirmarRealizacao } from './pages/secretaria/ConfirmarRealizacao'
+import { PainelGestaoPage } from './pages/medico/PainelGestao'
+import { Procedimentos } from './pages/medico/Procedimentos'
+import { Configuracoes } from './pages/medico/Configuracoes'
 
 function RotasProtegidas() {
   const { isAutenticado } = useAuth()
@@ -30,13 +30,12 @@ function AppRoutes() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="pacientes" element={<Pacientes />} />
         <Route path="pacientes/:id" element={<PerfilPaciente />} />
-        <Route path="painel" element={<PainelGestaoPage />} />
-        <Route path="painel" element={<div className="text-xl font-bold text-[#4F525A]">Painel Médico — em construção</div>} />
-        <Route path="procedimentos" element={<Procedimentos />} />
-        <Route path="configuracoes" element={<Configuracoes />} />
         <Route path="cadastro-lote" element={<CadastroLote />} />
         <Route path="agendamentos-confirmar" element={<AgendamentosConfirmar />} />
         <Route path="confirmar-realizacao" element={<ConfirmarRealizacao />} />
+        <Route path="painel" element={<PainelGestaoPage />} />
+        <Route path="procedimentos" element={<Procedimentos />} />
+        <Route path="configuracoes" element={<Configuracoes />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
@@ -54,4 +53,5 @@ function App() {
     </BrowserRouter>
   )
 }
+
 export default App

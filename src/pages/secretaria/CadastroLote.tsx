@@ -7,8 +7,10 @@ import { criarVinculoProcedimento } from '../../api/procedimentos-paciente'
 import { listarProcedimentos } from '../../api/procedimentos'
 import { useDebounce } from '../../hooks/useDebounce'
 import type { Procedimento, TagPaciente, Paciente } from '../../types'
+import { useToast } from '../../context/ToastContext'
 
 export function CadastroLote() {
+  const { mostrarToast } = useToast()
   const [modo, setModo] = useState<'novo' | 'existente'>('novo')
 
   const [nome, setNome] = useState('')
@@ -72,56 +74,59 @@ export function CadastroLote() {
     setBuscaPaciente('')
   }
 
-  const handleSalvar = async () => {
-    if (modo === 'novo' && (!nome.trim() || !telefone.trim())) {
-      setErro('Nome e telefone são obrigatórios')
-      return
-    }
-    if (modo === 'existente' && !pacienteSelecionado) {
-      setErro('Selecione um paciente existente')
-      return
-    }
-    if (!procedimentoId || !dataRealizacao) {
-      setErro('Selecione o procedimento e a data')
-      return
-    }
-
-    setErro('')
-    setSalvando(true)
-    try {
-      let pacienteId: number
-      let nomeParaFeedback: string
-
-      if (modo === 'novo') {
-        const paciente = await criarPaciente({
-          nome,
-          telefone,
-          dataNascimento: dataNascimento || undefined,
-          tags,
-        })
-        pacienteId = paciente.id
-        nomeParaFeedback = paciente.nome
-      } else {
-        pacienteId = pacienteSelecionado!.id
-        nomeParaFeedback = pacienteSelecionado!.nome
-      }
-
-      await criarVinculoProcedimento({
-        pacienteId,
-        procedimentoId: Number(procedimentoId),
-        dataRealizacao,
-      })
-
-      setUltimoNome(nomeParaFeedback)
-      setContador(prev => prev + 1)
-      limparFormulario()
-      nomeRef.current?.focus()
-    } catch (err: any) {
-      setErro(err.response?.data?.message || 'Erro ao cadastrar')
-    } finally {
-      setSalvando(false)
-    }
+ const handleSalvar = async () => {
+  if (modo === 'novo' && (!nome.trim() || !telefone.trim())) {
+    setErro('Nome e telefone são obrigatórios')
+    return
   }
+  if (modo === 'existente' && !pacienteSelecionado) {
+    setErro('Selecione um paciente existente')
+    return
+  }
+  if (!procedimentoId || !dataRealizacao) {
+    setErro('Selecione o procedimento e a data')
+    return
+  }
+
+  setErro('')
+  setSalvando(true)
+  try {
+    let pacienteId: number
+    let nomeParaFeedback: string
+
+    if (modo === 'novo') {
+      const paciente = await criarPaciente({
+        nome,
+        telefone,
+        dataNascimento: dataNascimento || undefined,
+        tags,
+      })
+      pacienteId = paciente.id
+      nomeParaFeedback = paciente.nome
+    } else {
+      pacienteId = pacienteSelecionado!.id
+      nomeParaFeedback = pacienteSelecionado!.nome
+    }
+
+    await criarVinculoProcedimento({
+      pacienteId,
+      procedimentoId: Number(procedimentoId),
+      dataRealizacao,
+    })
+
+    setUltimoNome(nomeParaFeedback)
+    setContador(prev => prev + 1)
+    mostrarToast('success', 'Cadastro concluído', `${nomeParaFeedback} atualizado com sucesso`)
+    limparFormulario()
+    nomeRef.current?.focus()
+  } catch (err: any) {
+    const mensagem = err.response?.data?.message || 'Erro ao cadastrar'
+    setErro(mensagem)
+    mostrarToast('error', 'Não foi possível cadastrar', mensagem)
+  } finally {
+    setSalvando(false)
+  }
+}
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && e.ctrlKey) {

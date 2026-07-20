@@ -3,6 +3,7 @@ import { X } from 'lucide-react'
 import { Button } from './Button'
 import { criarPaciente } from '../../api/pacientes'
 import type { TagPaciente } from '../../types'
+import { useToast } from '../../context/ToastContext'
 
 interface Props {
   onClose: () => void
@@ -10,6 +11,8 @@ interface Props {
 }
 
 export function ModalNovoPaciente({ onClose, onSucesso }: Props) {
+
+  const { mostrarToast } = useToast()
   const [nome, setNome] = useState('')
   const [telefone, setTelefone] = useState('')
   const [dataNascimento, setDataNascimento] = useState('')
@@ -59,35 +62,36 @@ export function ModalNovoPaciente({ onClose, onSucesso }: Props) {
   }
 
   const handleSalvar = async () => {
-    if (!nome.trim() || !telefone.trim()) {
-      setErro('Nome e telefone são obrigatórios')
-      return
-    }
-
-    // Extrai apenas números para validação
-    const apenasNumeros = telefone.replace(/\D/g, '')
-    if (apenasNumeros.length < 10) {
-      setErro('Telefone deve ter pelo menos 10 dígitos (com DDD)')
-      return
-    }
-
-    setErro('')
-    setLoading(true)
-    try {
-      await criarPaciente({
-        nome,
-        telefone: apenasNumeros, // envia apenas números
-        dataNascimento: dataNascimento || undefined,
-        tags: tagsSelecionadas,
-      })
-      onSucesso()
-    } catch (err: any) {
-      setErro(err.response?.data?.message || 'Erro ao cadastrar paciente')
-    } finally {
-      setLoading(false)
-    }
+  if (!nome.trim() || !telefone.trim()) {
+    setErro('Nome e telefone são obrigatórios')
+    return
   }
 
+  const apenasNumeros = telefone.replace(/\D/g, '')
+  if (apenasNumeros.length < 10) {
+    setErro('Telefone deve ter pelo menos 10 dígitos (com DDD)')
+    return
+  }
+
+  setErro('')
+  setLoading(true)
+  try {
+    await criarPaciente({
+      nome,
+      telefone: apenasNumeros,
+      dataNascimento: dataNascimento || undefined,
+      tags: tagsSelecionadas,
+    })
+    mostrarToast('success', 'Paciente cadastrado', `${nome} foi adicionado com sucesso`)
+    onSucesso()
+  } catch (err: any) {
+    const mensagem = err.response?.data?.message || 'Erro ao cadastrar paciente'
+    setErro(mensagem)
+    mostrarToast('error', 'Não foi possível cadastrar', mensagem)
+  } finally {
+    setLoading(false)
+  }
+}
   return (
     <div
       className="fixed inset-0 flex items-center justify-center z-50"

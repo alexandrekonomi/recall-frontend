@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Users, ClipboardList, Settings, ChevronLeft, UserPlus, CalendarClock, CheckCircle2 } from 'lucide-react'
+import { LayoutDashboard, Users, ClipboardList, Settings, ChevronLeft, UserPlus, CalendarClock, CheckCircle2, LogOut } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { listarAguardandoDados, listarAguardandoRealizacao } from '../../api/agendamentos'
 import logo from '../../assets/logo-side.svg'
@@ -125,15 +125,12 @@ export function Sidebar() {
         </button>
       </div>
 
-      {/* Usuário */}
+      {/* Usuário + Sair */}
       <div
-        className="px-3 py-4"
+        className="px-3 py-4 flex flex-col gap-1"
         style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}
       >
-        <button
-          onClick={sair}
-          className="flex items-center gap-3 w-full hover:opacity-80 transition-opacity"
-        >
+        <div className="flex items-center gap-3 px-0 py-1">
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
             style={{ backgroundColor: '#14B7C1' }}
@@ -141,9 +138,9 @@ export function Sidebar() {
             <span className="text-white text-xs font-semibold">{iniciais}</span>
           </div>
           {!collapsed && (
-            <div className="text-left">
+            <div className="text-left overflow-hidden">
               <p
-                className="text-[12px] font-medium truncate max-w-[100px]"
+                className="text-[12px] font-medium truncate"
                 style={{ color: '#FFFFFF' }}
               >
                 {usuario?.nome}
@@ -151,6 +148,23 @@ export function Sidebar() {
               <p className="text-[11px]" style={{ color: '#6B7280' }}>{cargo}</p>
             </div>
           )}
+        </div>
+
+        <button
+          onClick={sair}
+          className="flex items-center gap-3 px-2 py-2 rounded-lg w-full text-left transition-all"
+          style={{ color: '#9CA3AF' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(239,68,68,0.1)'
+            e.currentTarget.style.color = '#EF4444'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent'
+            e.currentTarget.style.color = '#9CA3AF'
+          }}
+        >
+          <LogOut size={16} className="flex-shrink-0" />
+          {!collapsed && <span className="text-[12px] font-medium">Sair</span>}
         </button>
       </div>
     </aside>
