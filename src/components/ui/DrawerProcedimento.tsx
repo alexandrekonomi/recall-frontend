@@ -4,6 +4,8 @@ import { Button } from './Button'
 import { criarProcedimento, atualizarProcedimento } from '../../api/procedimentos'
 import type { Procedimento } from '../../types'
 
+import { useToast } from '../../context/ToastContext'
+
 interface Props {
   procedimento: Procedimento | null
   onClose: () => void
@@ -11,6 +13,7 @@ interface Props {
 }
 
 export function DrawerProcedimento({ procedimento, onClose, onSucesso }: Props) {
+  const { mostrarToast } = useToast()
   const [nome, setNome] = useState(procedimento?.nome || '')
   const [descricao, setDescricao] = useState(procedimento?.descricao || '')
   const [intervalo, setIntervalo] = useState(procedimento?.intervaloRetornoDias?.toString() || '')
@@ -57,13 +60,17 @@ export function DrawerProcedimento({ procedimento, onClose, onSucesso }: Props) 
 
       if (procedimento) {
         await atualizarProcedimento(procedimento.id, payload)
+        mostrarToast('success', 'Procedimento atualizado', `${nome} foi salvo com sucesso`)
       } else {
         await criarProcedimento(payload)
+        mostrarToast('success', 'Procedimento criado', `${nome} já está disponível para uso`)
       }
 
       onSucesso()
     } catch (err: any) {
-      setErro(err.response?.data?.message || 'Erro ao salvar procedimento')
+      const mensagem = err.response?.data?.message || 'Erro ao salvar procedimento'
+      setErro(mensagem)
+      mostrarToast('error', 'Não foi possível salvar', mensagem)
     } finally {
       setLoading(false)
     }

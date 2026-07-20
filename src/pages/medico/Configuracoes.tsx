@@ -7,9 +7,12 @@ import { ModalConvidarUsuario } from '../../components/ui/ModalConvidarUsuario'
 import type { Usuario } from '../../api/usuarios'
 import { Settings } from 'lucide-react'
 import { PageHeader } from '../../components/ui/PageHeader'
+import { useToast } from '../../context/ToastContext'
 
 
 export function Configuracoes() {
+
+  const { mostrarToast } = useToast()
   const [nomeClinica, setNomeClinica] = useState('')
   const [telefoneContato, setTelefoneContato] = useState('')
   const [diasRecontato, setDiasRecontato] = useState('3')
@@ -43,13 +46,20 @@ export function Configuracoes() {
   }
 
   const toggleStatusUsuario = async (usuario: Usuario) => {
+  try {
     if (usuario.ativo) {
       await desativarUsuario(usuario.id)
+      mostrarToast('success', 'Usuário desativado', `${usuario.nome} não terá mais acesso`)
     } else {
       await reativarUsuario(usuario.id)
+      mostrarToast('success', 'Usuário reativado', `${usuario.nome} pode acessar novamente`)
     }
     carregarUsuarios()
+  } catch (err) {
+    console.error('Erro ao alterar status:', err)
+    mostrarToast('error', 'Não foi possível alterar', 'Tente novamente em instantes')
   }
+}
 
   const handleSalvar = async () => {
     setSalvando(true)
@@ -61,9 +71,11 @@ export function Configuracoes() {
         diasRecontatoSemResposta: Number(diasRecontato),
       })
       setSucesso(true)
+      mostrarToast('success', 'Configurações salvas', 'As alterações já estão em vigor')
       setTimeout(() => setSucesso(false), 3000)
     } catch (err) {
       console.error('Erro ao salvar:', err)
+      mostrarToast('error', 'Não foi possível salvar', 'Tente novamente em instantes')
     } finally {
       setSalvando(false)
     }
