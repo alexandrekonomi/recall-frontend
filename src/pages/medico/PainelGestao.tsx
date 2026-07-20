@@ -131,6 +131,43 @@ export function PainelGestaoPage() {
         </p>
       </div>
 
+      {/* Agendamentos e comparecimento */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div
+          className="rounded-xl p-5 flex items-center justify-between"
+          style={{ backgroundColor: '#FFFFFF', border: '1px solid #E3E6EA' }}
+        >
+          <div>
+            <p className="text-[13px] font-medium" style={{ color: '#9CA3AF' }}>
+              Agendamentos pendentes de confirmação
+            </p>
+            <p className="text-[12px] mt-0.5" style={{ color: '#9CA3AF' }}>
+              Aguardando dados ou aguardando realização
+            </p>
+          </div>
+          <p className="text-[28px] font-bold" style={{ color: painel.agendamentosPendentes > 0 ? '#F59E0B' : '#4F525A' }}>
+            {painel.agendamentosPendentes}
+          </p>
+        </div>
+
+        <div
+          className="rounded-xl p-5 flex items-center justify-between"
+          style={{ backgroundColor: '#FFFFFF', border: '1px solid #E3E6EA' }}
+        >
+          <div>
+            <p className="text-[13px] font-medium" style={{ color: '#9CA3AF' }}>
+              Taxa de comparecimento do mês
+            </p>
+            <p className="text-[12px] mt-0.5" style={{ color: '#9CA3AF' }}>
+              Agendados que realmente compareceram
+            </p>
+          </div>
+          <p className="text-[28px] font-bold" style={{ color: '#22C55E' }}>
+            {painel.taxaComparecimentoMes}%
+          </p>
+        </div>
+      </div>
+
       {/* Gráficos */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Contatos por semana */}
