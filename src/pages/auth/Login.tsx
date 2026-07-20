@@ -5,8 +5,10 @@ import { Button } from '../../components/ui/Button'
 import { useAuth } from '../../context/AuthContext'
 import { login } from '../../api/auth'
 import logo from '../../assets/logo.svg';
+import { useSearchParams } from 'react-router-dom'
 
 export function Login() {
+  const [searchParams] = useSearchParams()
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [mostrarSenha, setMostrarSenha] = useState(false)
@@ -14,6 +16,12 @@ export function Login() {
   const [loading, setLoading] = useState(false)
   const { entrar, isAutenticado, usuario } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (searchParams.get('motivo') === 'inatividade') {
+      setErro('Sua sessão expirou por inatividade. Faça login novamente.')
+    }
+  }, [searchParams])
 
   useEffect(() => {
     if (isAutenticado) {

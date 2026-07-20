@@ -13,11 +13,19 @@ import { ConfirmarRealizacao } from './pages/secretaria/ConfirmarRealizacao'
 import { PainelGestaoPage } from './pages/medico/PainelGestao'
 import { Procedimentos } from './pages/medico/Procedimentos'
 import { Configuracoes } from './pages/medico/Configuracoes'
+import { useInactivityTimeout } from './hooks/useInactivityTimeout'
 
 function RotasProtegidas() {
-  const { isAutenticado } = useAuth()
+  const { isAutenticado, sair } = useAuth()
+
+ useInactivityTimeout(() => {
+  sair()
+  window.location.href = '/login?motivo=inatividade'
+}, isAutenticado)
+
   if (!isAutenticado) return <Navigate to="/login" replace />
   return <AppLayout />
+
 }
 
 function AppRoutes() {
