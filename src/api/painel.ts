@@ -23,6 +23,8 @@ export interface PainelGestao {
   taxaRetornoMes: number
   totalContatosMes: number
   receitaPotencial: number
+  agendamentosPendentes: number
+  taxaComparecimentoMes: number
   contatosPorSemana: ContatosPorSemana[]
   distribuicaoResultados: DistribuicaoResultado[]
   procedimentosComMaiorAbandono: ProcedimentoAbandono[]

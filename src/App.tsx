@@ -9,7 +9,10 @@ import { Procedimentos } from './pages/medico/Procedimentos'
 import { PainelGestaoPage } from './pages/medico/PainelGestao'
 import { Configuracoes } from './pages/medico/Configuracoes'
 import { AtivarConta } from './pages/auth/AtivarConta'
-
+import { CadastroLote } from './pages/secretaria/CadastroLote'
+import { AgendamentosConfirmar } from './pages/secretaria/AgendamentosConfirmar'
+import { ToastProvider } from './context/ToastContext'
+import { ConfirmarRealizacao } from './pages/secretaria/ConfirmarRealizacao'
 
 function RotasProtegidas() {
   const { isAutenticado } = useAuth()
@@ -31,6 +34,9 @@ function AppRoutes() {
         <Route path="painel" element={<div className="text-xl font-bold text-[#4F525A]">Painel Médico — em construção</div>} />
         <Route path="procedimentos" element={<Procedimentos />} />
         <Route path="configuracoes" element={<Configuracoes />} />
+        <Route path="cadastro-lote" element={<CadastroLote />} />
+        <Route path="agendamentos-confirmar" element={<AgendamentosConfirmar />} />
+        <Route path="confirmar-realizacao" element={<ConfirmarRealizacao />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
@@ -41,10 +47,11 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <ToastProvider>
+          <AppRoutes />
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   )
 }
-
 export default App

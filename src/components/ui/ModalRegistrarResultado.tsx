@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Calendar, XCircle, Clock, X } from 'lucide-react'
 import { Button } from './Button'
 import { registrarContato } from '../../api/contatos'
-import type { ListaDiariaItem, ResultadoContato } from '../../types'
+import { listarProcedimentos } from '../../api/procedimentos'
+import type { ListaDiariaItem, ResultadoContato, Procedimento } from '../../types'
 
 interface Props {
   item: ListaDiariaItem
@@ -14,6 +15,13 @@ export function ModalRegistrarResultado({ item, onClose, onSucesso }: Props) {
   const [status, setStatus] = useState<ResultadoContato | null>(null)
   const [observacao, setObservacao] = useState('')
   const [loading, setLoading] = useState(false)
+  const [procedimentos, setProcedimentos] = useState<Procedimento[]>([])
+  const [procedimentoAgendadoId, setProcedimentoAgendadoId] = useState('')
+  const [dataAgendada, setDataAgendada] = useState('')
+
+  useEffect(() => {
+    listarProcedimentos().then(setProcedimentos).catch(console.error)
+  }, [])
 
   const diasAtraso = Math.floor(
     (new Date().getTime() - new Date(item.dataProximoContato + 'T00:00:00').getTime()) /
@@ -55,6 +63,10 @@ export function ModalRegistrarResultado({ item, onClose, onSucesso }: Props) {
         procedimentoPacienteId: item.procedimentoPacienteId,
         status,
         observacao: observacao || undefined,
+        procedimentoAgendadoId: status === 'AGENDOU' && procedimentoAgendadoId
+          ? Number(procedimentoAgendadoId)
+          : undefined,
+        dataAgendada: status === 'AGENDOU' && dataAgendada ? dataAgendada : undefined,
       })
       onSucesso(item.procedimentoPacienteId)
     } catch (err) {
@@ -120,6 +132,38 @@ export function ModalRegistrarResultado({ item, onClose, onSucesso }: Props) {
             )
           })}
         </div>
+
+        {/* Detalhes do agendamento (só aparece se marcou Agendou) */}
+        {status === 'AGENDOU' && (
+          <div className="mt-5 pt-5" style={{ borderTop: '1px solid #F5F7F9' }}>
+            <p className="text-[13px] font-medium mb-1" style={{ color: '#4F525A' }}>
+              Detalhes do agendamento <span style={{ color: '#9CA3AF', fontWeight: 400 }}>(opcional)</span>
+            </p>
+            <p className="text-[11px] mb-3" style={{ color: '#9CA3AF' }}>
+              Se já souber o procedimento e a data, preencha agora e economize um passo depois
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <select
+                value={procedimentoAgendadoId}
+                onChange={e => setProcedimentoAgendadoId(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-lg text-[13px] outline-none"
+                style={{ border: '1px solid #E3E6EA', color: '#4F525A' }}
+              >
+                <option value="">Procedimento</option>
+                {procedimentos.map(p => (
+                  <option key={p.id} value={p.id}>{p.nome}</option>
+                ))}
+              </select>
+              <input
+                type="date"
+                value={dataAgendada}
+                onChange={e => setDataAgendada(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-lg text-[13px] outline-none"
+                style={{ border: '1px solid #E3E6EA', color: '#4F525A' }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Observação */}
         <div className="mt-5">

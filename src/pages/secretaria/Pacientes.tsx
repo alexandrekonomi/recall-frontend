@@ -7,22 +7,21 @@ import { listarPacientes } from '../../api/pacientes'
 import { ModalNovoPaciente } from '../../components/ui/ModalNovoPaciente'
 import type { Paciente, TagPaciente } from '../../types'
 
-// Função utilitária para formatar telefone
+import { PageHeader } from '../../components/ui/PageHeader'
+
+
 const formatarTelefone = (numero: string): string => {
-  // Remove todos os caracteres não numéricos por segurança
   const apenasNumeros = numero.replace(/\D/g, '')
-  
+
   if (apenasNumeros.length === 10) {
     return `(${apenasNumeros.slice(0, 2)}) ${apenasNumeros.slice(2, 6)}-${apenasNumeros.slice(6)}`
   }
   if (apenasNumeros.length === 11) {
     return `(${apenasNumeros.slice(0, 2)}) ${apenasNumeros.slice(2, 7)}-${apenasNumeros.slice(7)}`
   }
-  // Se não for 10 ou 11, retorna o número original (ou apenas números)
   return apenasNumeros || numero
 }
 
-// Função para normalizar a busca (remove máscaras)
 const normalizarBusca = (termo: string): string => termo.replace(/\D/g, '')
 
 export function Pacientes() {
@@ -56,7 +55,7 @@ export function Pacientes() {
   const pacientesFiltrados = pacientes.filter(p => {
     const matchBusca =
       p.nome.toLowerCase().includes(busca.toLowerCase()) ||
-      p.telefone.includes(buscaNormalizada) // busca apenas pelos números
+      p.telefone.includes(buscaNormalizada)
     const matchTag = tagFiltro ? p.tags.includes(tagFiltro) : true
     const matchStatus = statusFiltro === 'ativos' ? p.ativo : !p.ativo
     return matchBusca && matchTag && matchStatus
@@ -77,23 +76,23 @@ export function Pacientes() {
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-[28px] font-bold" style={{ color: '#4F525A' }}>
-          Pacientes
-        </h1>
-        <Button onClick={() => setModalAberto(true)}>
-          <Plus size={16} />
-          Adicionar paciente
-        </Button>
-      </div>
+      <PageHeader
+        icon={<Users size={20} />}
+        title="Pacientes"
+        subtitle={`${pacientes.length} pacientes cadastrados`}
+        actions={
+          <Button onClick={() => setModalAberto(true)}>
+            <Plus size={16} />
+            Adicionar paciente
+          </Button>
+        }
+      />
 
       {/* Filtros */}
       <div
         className="flex items-center gap-3 p-4 rounded-xl mb-6"
         style={{ backgroundColor: '#FFFFFF', border: '1px solid #E3E6EA' }}
       >
-        {/* Busca */}
         <div className="relative flex-1 max-w-[280px]">
           <Search
             size={16}
@@ -112,7 +111,6 @@ export function Pacientes() {
           />
         </div>
 
-        {/* Tags */}
         <div className="flex items-center gap-1.5">
           <span className="text-[12px] font-medium" style={{ color: '#9CA3AF' }}>Tags:</span>
           {tags.map(tag => (
@@ -131,10 +129,8 @@ export function Pacientes() {
           ))}
         </div>
 
-        {/* Separador */}
         <div className="w-px h-6" style={{ backgroundColor: '#E3E6EA' }} />
 
-        {/* Status */}
         {(['ativos', 'inativos'] as const).map(s => (
           <button
             key={s}
@@ -151,14 +147,12 @@ export function Pacientes() {
         ))}
       </div>
 
-      {/* Loading */}
       {loading && (
         <div className="text-center py-16">
           <span className="text-[14px]" style={{ color: '#9CA3AF' }}>Carregando...</span>
         </div>
       )}
 
-      {/* Estado vazio */}
       {!loading && pacientes.length === 0 && (
         <div className="text-center py-20">
           <div
@@ -180,7 +174,6 @@ export function Pacientes() {
         </div>
       )}
 
-      {/* Tabela */}
       {!loading && pacientesPaginados.length > 0 && (
         <div
           className="rounded-xl overflow-hidden"
@@ -254,7 +247,6 @@ export function Pacientes() {
             </tbody>
           </table>
 
-          {/* Paginação */}
           <div
             className="flex items-center justify-between px-5 py-3"
             style={{ borderTop: '1px solid #E3E6EA' }}
@@ -298,7 +290,6 @@ export function Pacientes() {
         </div>
       )}
 
-      {/* Modal */}
       {modalAberto && (
         <ModalNovoPaciente
           onClose={() => setModalAberto(false)}

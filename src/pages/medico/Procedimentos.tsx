@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, ClipboardList } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
 import { listarProcedimentos, toggleStatusProcedimento } from '../../api/procedimentos'
 import { DrawerProcedimento } from '../../components/ui/DrawerProcedimento'
 import type { Procedimento } from '../../types'
+import { PageHeader } from '../../components/ui/PageHeader'
 
 export function Procedimentos() {
   const [procedimentos, setProcedimentos] = useState<Procedimento[]>([])
@@ -45,7 +46,6 @@ export function Procedimentos() {
   const toggleAtivo = async (p: Procedimento, e: React.MouseEvent) => {
     e.stopPropagation()
 
-    // Atualização otimista: muda o estado local imediatamente
     setProcedimentos(prev =>
       prev.map(proc =>
         proc.id === p.id ? { ...proc, ativo: !proc.ativo } : proc
@@ -53,12 +53,8 @@ export function Procedimentos() {
     )
 
     try {
-      // Chama o endpoint específico para alternar o status
       await toggleStatusProcedimento(p.id)
-      // Se quiser garantir o estado exato vindo do servidor, recarregue a lista:
-      // carregarProcedimentos()
     } catch (err) {
-      // Reverte a alteração otimista em caso de erro
       setProcedimentos(prev =>
         prev.map(proc =>
           proc.id === p.id ? { ...proc, ativo: p.ativo } : proc
@@ -70,25 +66,24 @@ export function Procedimentos() {
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-[28px] font-bold" style={{ color: '#4F525A' }}>
-          Procedimentos
-        </h1>
-        <Button onClick={abrirNovo}>
-          <Plus size={16} />
-          Adicionar procedimento
-        </Button>
-      </div>
+      <PageHeader
+        icon={<ClipboardList size={20} />}
+        title="Procedimentos"
+        subtitle="Configure os procedimentos e templates de mensagem"
+        actions={
+          <Button onClick={abrirNovo}>
+            <Plus size={16} />
+            Adicionar procedimento
+          </Button>
+        }
+      />
 
-      {/* Loading */}
       {loading && (
         <div className="text-center py-16">
           <span className="text-[14px]" style={{ color: '#9CA3AF' }}>Carregando...</span>
         </div>
       )}
 
-      {/* Grid de procedimentos */}
       {!loading && (
         <div className="grid grid-cols-3 gap-4">
           {procedimentos.map(p => (
@@ -106,7 +101,6 @@ export function Procedimentos() {
                 <h3 className="text-[15px] font-semibold" style={{ color: '#4F525A' }}>
                   {p.nome}
                 </h3>
-                {/* Toggle (visível para todos; permissão validada no backend) */}
                 <button
                   onClick={(e) => toggleAtivo(p, e)}
                   className="relative w-9 h-5 rounded-full transition-colors flex-shrink-0"
@@ -137,7 +131,6 @@ export function Procedimentos() {
         </div>
       )}
 
-      {/* Estado vazio */}
       {!loading && procedimentos.length === 0 && (
         <div className="text-center py-16">
           <p className="text-[15px] font-semibold mb-1" style={{ color: '#4F525A' }}>
@@ -153,7 +146,6 @@ export function Procedimentos() {
         </div>
       )}
 
-      {/* Drawer */}
       {drawerAberto && (
         <DrawerProcedimento
           procedimento={procedimentoSelecionado}

@@ -26,3 +26,9 @@ export const criarPaciente = async (paciente: {
   return data
 }
 
+export const buscarPacientes = async (termo: string): Promise<Paciente[]> => {
+  if (!termo.trim()) return []
+  const { data } = await api.get('/pacientes/buscar', { params: { termo } })
+  return data
+}
+

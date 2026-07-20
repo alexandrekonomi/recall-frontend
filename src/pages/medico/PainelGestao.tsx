@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts'
 import { buscarPainelGestao } from '../../api/painel'
 import type { PainelGestao } from '../../api/painel'
+import { PageHeader } from '../../components/ui/PageHeader'
+import { BarChart3 } from 'lucide-react'
 
 const CORES_STATUS: Record<string, string> = {
   AGENDOU: '#22C55E',
@@ -54,9 +56,11 @@ export function PainelGestaoPage() {
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif' }}>
-      <h1 className="text-[28px] font-bold mb-6" style={{ color: '#4F525A' }}>
-        Painel de gestão
-      </h1>
+      <PageHeader
+        icon={<BarChart3 size={20} />}
+        title="Painel de gestão"
+        subtitle="Métricas e desempenho da clínica"
+      />
 
       {/* Métricas principais */}
       <div className="grid grid-cols-4 gap-4 mb-6">
@@ -125,6 +129,43 @@ export function PainelGestaoPage() {
         <p className="text-[34px] font-bold" style={{ color: '#14B7C1' }}>
           {formatarMoeda(painel.receitaPotencial)}
         </p>
+      </div>
+
+      {/* Agendamentos e comparecimento */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div
+          className="rounded-xl p-5 flex items-center justify-between"
+          style={{ backgroundColor: '#FFFFFF', border: '1px solid #E3E6EA' }}
+        >
+          <div>
+            <p className="text-[13px] font-medium" style={{ color: '#9CA3AF' }}>
+              Agendamentos pendentes de confirmação
+            </p>
+            <p className="text-[12px] mt-0.5" style={{ color: '#9CA3AF' }}>
+              Aguardando dados ou aguardando realização
+            </p>
+          </div>
+          <p className="text-[28px] font-bold" style={{ color: painel.agendamentosPendentes > 0 ? '#F59E0B' : '#4F525A' }}>
+            {painel.agendamentosPendentes}
+          </p>
+        </div>
+
+        <div
+          className="rounded-xl p-5 flex items-center justify-between"
+          style={{ backgroundColor: '#FFFFFF', border: '1px solid #E3E6EA' }}
+        >
+          <div>
+            <p className="text-[13px] font-medium" style={{ color: '#9CA3AF' }}>
+              Taxa de comparecimento do mês
+            </p>
+            <p className="text-[12px] mt-0.5" style={{ color: '#9CA3AF' }}>
+              Agendados que realmente compareceram
+            </p>
+          </div>
+          <p className="text-[28px] font-bold" style={{ color: '#22C55E' }}>
+            {painel.taxaComparecimentoMes}%
+          </p>
+        </div>
       </div>
 
       {/* Gráficos */}

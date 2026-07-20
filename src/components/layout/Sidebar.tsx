@@ -1,27 +1,40 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Users, ClipboardList, Settings, ChevronLeft } from 'lucide-react'
+import { LayoutDashboard, Users, ClipboardList, Settings, ChevronLeft, UserPlus, CalendarClock, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
-import logo from '../../assets/logo-side.svg';
+import { listarAguardandoDados, listarAguardandoRealizacao } from '../../api/agendamentos'
+import logo from '../../assets/logo-side.svg'
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
+  const [totalPendentes, setTotalPendentes] = useState(0)
+  const [totalRealizacao, setTotalRealizacao] = useState(0)
   const { usuario, sair } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
   const isMedico = usuario?.perfil === 'MEDICO'
 
+  useEffect(() => {
+    if (!isMedico) {
+      listarAguardandoDados().then(data => setTotalPendentes(data.length)).catch(console.error)
+      listarAguardandoRealizacao().then(data => setTotalRealizacao(data.length)).catch(console.error)
+    }
+  }, [isMedico])
+
   const menuSecretaria = [
-    { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-    { label: 'Pacientes', icon: Users, path: '/pacientes' },
+    { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', badge: 0 },
+    { label: 'Pacientes', icon: Users, path: '/pacientes', badge: 0 },
+    { label: 'Cadastro rápido', icon: UserPlus, path: '/cadastro-lote', badge: 0 },
+    { label: 'Agendamentos', icon: CalendarClock, path: '/agendamentos-confirmar', badge: totalPendentes },
+    { label: 'Confirmar realização', icon: CheckCircle2, path: '/confirmar-realizacao', badge: totalRealizacao },
   ]
 
   const menuMedico = [
-    { label: 'Painel de gestão', icon: LayoutDashboard, path: '/painel' },
-    { label: 'Pacientes', icon: Users, path: '/pacientes' },
-    { label: 'Procedimentos', icon: ClipboardList, path: '/procedimentos' },
-    { label: 'Configurações', icon: Settings, path: '/configuracoes' },
+    { label: 'Painel de gestão', icon: LayoutDashboard, path: '/painel', badge: 0 },
+    { label: 'Pacientes', icon: Users, path: '/pacientes', badge: 0 },
+    { label: 'Procedimentos', icon: ClipboardList, path: '/procedimentos', badge: 0 },
+    { label: 'Configurações', icon: Settings, path: '/configuracoes', badge: 0 },
   ]
 
   const menu = isMedico ? menuMedico : menuSecretaria
@@ -37,13 +50,13 @@ export function Sidebar() {
         fontFamily: 'Inter, sans-serif',
       }}
     >
-      {/* Logo – apenas imagem, sem texto "Recall" */}
-      <div className="flex items-center gap-3 px-4 py-5">
+      {/* Logo */}
+      <div className="flex items-center justify-center px-4 py-5">
         <img
           src={logo}
-          alt="Logo da clínica"
+          alt="Recall"
           className="flex-shrink-0"
-          style={{ height: 100, width: 'auto' }}
+          style={{ height: 32, width: 32 }}
         />
       </div>
 
@@ -75,7 +88,18 @@ export function Sidebar() {
             >
               <item.icon size={18} className="flex-shrink-0" />
               {!collapsed && (
-                <span className="text-[13px] font-medium">{item.label}</span>
+                <span className="text-[13px] font-medium flex-1">{item.label}</span>
+              )}
+              {!collapsed && item.badge > 0 && (
+                <span
+                  className="text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
+                  style={{
+                    backgroundColor: active ? 'rgba(255,255,255,0.25)' : '#EF4444',
+                    color: '#FFFFFF',
+                  }}
+                >
+                  {item.badge}
+                </span>
               )}
             </button>
           )
