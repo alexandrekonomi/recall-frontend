@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, MoreVertical } from 'lucide-react'
+import { Plus, MoreVertical, UserX, UserCheck } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
 import { buscarConfiguracao, atualizarConfiguracao } from '../../api/configuracoes'
 import { listarUsuarios, desativarUsuario, reativarUsuario } from '../../api/usuarios'
@@ -8,7 +8,7 @@ import type { Usuario } from '../../api/usuarios'
 import { Settings } from 'lucide-react'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { useToast } from '../../context/ToastContext'
-
+import { ModalConfirmarAcao } from '../../components/ui/ModalConfirmarAcao'
 
 export function Configuracoes() {
 
@@ -21,10 +21,33 @@ export function Configuracoes() {
   const [sucesso, setSucesso] = useState(false)
   const [usuarios, setUsuarios] = useState<Usuario[]>([])
   const [modalConviteAberto, setModalConviteAberto] = useState(false)
+  const [menuAbertoId, setMenuAbertoId] = useState<number | null>(null)
+  const [usuarioAlvo, setUsuarioAlvo] = useState<Usuario | null>(null)
+  const [processando, setProcessando] = useState(false)
 
   useEffect(() => {
     carregar()
   }, [])
+
+  useEffect(() => {
+    if (menuAbertoId === null) return
+
+    const fecharAoClicarFora = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest('[data-menu-usuario]')) {
+        setMenuAbertoId(null)
+      }
+    }
+    const fecharComEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuAbertoId(null)
+    }
+
+    document.addEventListener('mousedown', fecharAoClicarFora)
+    document.addEventListener('keydown', fecharComEsc)
+    return () => {
+      document.removeEventListener('mousedown', fecharAoClicarFora)
+      document.removeEventListener('keydown', fecharComEsc)
+    }
+  }, [menuAbertoId])
 
   const carregar = async () => {
     try {
@@ -45,21 +68,27 @@ export function Configuracoes() {
     setUsuarios(data)
   }
 
-  const toggleStatusUsuario = async (usuario: Usuario) => {
-  try {
-    if (usuario.ativo) {
-      await desativarUsuario(usuario.id)
-      mostrarToast('success', 'Usuário desativado', `${usuario.nome} não terá mais acesso`)
-    } else {
-      await reativarUsuario(usuario.id)
-      mostrarToast('success', 'Usuário reativado', `${usuario.nome} pode acessar novamente`)
+  const confirmarAlteracaoStatus = async () => {
+    if (!usuarioAlvo) return
+    setProcessando(true)
+    try {
+      if (usuarioAlvo.ativo) {
+        await desativarUsuario(usuarioAlvo.id)
+        mostrarToast('success', 'Usuário inativado', `${usuarioAlvo.nome} não tem mais acesso`)
+      } else {
+        await reativarUsuario(usuarioAlvo.id)
+        mostrarToast('success', 'Usuário reativado', `${usuarioAlvo.nome} pode acessar novamente`)
+      }
+      await carregarUsuarios()
+      setUsuarioAlvo(null)
+    } catch (err: any) {
+      console.error('Erro ao alterar status:', err)
+      const mensagem = err.response?.data?.mensagem || 'Tente novamente em instantes'
+      mostrarToast('error', 'Não foi possível alterar', mensagem)
+    } finally {
+      setProcessando(false)
     }
-    carregarUsuarios()
-  } catch (err) {
-    console.error('Erro ao alterar status:', err)
-    mostrarToast('error', 'Não foi possível alterar', 'Tente novamente em instantes')
   }
-}
 
   const handleSalvar = async () => {
     setSalvando(true)
@@ -217,6 +246,7 @@ export function Configuracoes() {
                     </p>
                   </div>
                 </div>
+
                 <div className="flex items-center gap-3">
                   <span
                     className="flex items-center gap-1.5 text-[12px] font-medium"
@@ -228,12 +258,44 @@ export function Configuracoes() {
                     />
                     {u.ativo ? 'Ativo' : 'Inativo'}
                   </span>
-                  <button
-                    onClick={() => toggleStatusUsuario(u)}
-                    style={{ color: '#9CA3AF' }}
-                  >
-                    <MoreVertical size={16} />
-                  </button>
+
+                  <div className="relative" data-menu-usuario>
+                    <button
+                      onClick={() => setMenuAbertoId(menuAbertoId === u.id ? null : u.id)}
+                      aria-label={`Ações para ${u.nome}`}
+                      aria-haspopup="menu"
+                      aria-expanded={menuAbertoId === u.id}
+                      className="p-1 rounded-md"
+                      style={{ color: '#9CA3AF' }}
+                    >
+                      <MoreVertical size={16} />
+                    </button>
+
+                    {menuAbertoId === u.id && (
+                      <div
+                        role="menu"
+                        className="absolute right-0 top-full mt-1 w-56 rounded-lg py-1 z-20"
+                        style={{
+                          backgroundColor: '#FFFFFF',
+                          border: '1px solid #E3E6EA',
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                        }}
+                      >
+                        <button
+                          role="menuitem"
+                          onClick={() => {
+                            setMenuAbertoId(null)
+                            setUsuarioAlvo(u)
+                          }}
+                          className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-left"
+                          style={{ color: u.ativo ? '#DC2626' : '#4F525A' }}
+                        >
+                          {u.ativo ? <UserX size={14} /> : <UserCheck size={14} />}
+                          {u.ativo ? 'Inativar usuário' : 'Reativar usuário'}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -244,6 +306,22 @@ export function Configuracoes() {
           <ModalConvidarUsuario
             onClose={() => setModalConviteAberto(false)}
             onSucesso={carregarUsuarios}
+          />
+        )}
+
+        {usuarioAlvo && (
+          <ModalConfirmarAcao
+            titulo={usuarioAlvo.ativo ? 'Inativar usuário' : 'Reativar usuário'}
+            descricao={
+              usuarioAlvo.ativo
+                ? `${usuarioAlvo.nome} não conseguirá mais entrar no Recall. Os dados ficam guardados e você pode reativar quando quiser.`
+                : `${usuarioAlvo.nome} voltará a ter acesso ao Recall.`
+            }
+            labelConfirmar={usuarioAlvo.ativo ? 'Inativar' : 'Reativar'}
+            perigo={usuarioAlvo.ativo}
+            loading={processando}
+            onConfirmar={confirmarAlteracaoStatus}
+            onClose={() => setUsuarioAlvo(null)}
           />
         )}
 
